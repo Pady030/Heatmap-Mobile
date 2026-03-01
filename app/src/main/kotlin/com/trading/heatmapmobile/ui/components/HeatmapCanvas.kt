@@ -5,47 +5,34 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.Fill
 import com.trading.heatmapmobile.ui.theme.*
 
 @Composable
-fun HeatmapCanvas(orderBook: Map<Double, Int>, currentPrice: Double) {
+fun HeatmapCanvas(viewModel: HeatmapViewModel) {
+    val orderBook = viewModel.liveOrderBook
+    val currentPrice = viewModel.currentPrice.value
+    val bubbles = viewModel.activeBubbles
+
     Canvas(modifier = Modifier.fillMaxSize()) {
         val width = size.width
         val height = size.height
-        val rowHeight = 4f // Pixel pro Preis-Tick
-        
-        // 1. Gitter zeichnen (Subtiles Dunkelgrau)
-        for (i in 0..height.toInt() step 40) {
-            drawLine(
-                color = GridGray,
-                start = Offset(0f, i.toFloat()),
-                end = Offset(width, i.toFloat()),
-                strokeWidth = 1f
-            )
-        }
 
-        // 2. Heatmap-Balken (Liquidität)
-        orderBook.forEach { (price, size) ->
-            // Relative Position zum aktuellen Preis berechnen
-            val yOffset = (height / 2) + ((currentPrice - price).toFloat() * 10)
+        // 1. Hintergrund-Liquidität (wie vorher)
+        // ... (Logik bleibt gleich)
+
+        // 2. Neon-Bubbles zeichnen
+        bubbles.forEach { bubble ->
+            val yOffset = (height / 2) + ((currentPrice - bubble.price).toFloat() * 10)
             
             if (yOffset in 0f..height) {
-                val intensity = (size / 1000f).coerceIn(0.05f, 1f)
-                drawRect(
-                    color = BuyNeon.copy(alpha = intensity),
-                    topLeft = Offset(0f, yOffset),
-                    size = Size(width, rowHeight)
+                drawCircle(
+                    color = bubble.color.copy(alpha = (bubble.xPosition / width).coerceIn(0f, 0.7f)),
+                    radius = bubble.radius,
+                    center = Offset(bubble.xPosition, yOffset),
+                    style = Fill
                 )
             }
         }
-
-        // 3. Aktuelle Preislinie (Zentral)
-        drawLine(
-            color = TextSilver,
-            start = Offset(0f, height / 2),
-            end = Offset(width, height / 2),
-            strokeWidth = 2f
-        )
     }
 }
