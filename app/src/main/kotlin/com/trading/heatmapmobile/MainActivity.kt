@@ -18,7 +18,7 @@ import com.trading.heatmapmobile.risk.RiskManager
 
 class MainActivity : ComponentActivity() {
     
-    // Initialisierung der Kernelemente
+    // Kernelemente der Trading-App
     private val engine = HeatmapEngine()
     private lateinit var hapticEngine: HapticEngine
     private val riskManager = RiskManager(maxDailyLoss = 1000.0)
@@ -28,19 +28,18 @@ class MainActivity : ComponentActivity() {
         hapticEngine = HapticEngine(this)
 
         setContent {
-            // State-Tracking für die UI-Reaktivität
             val isSpoofing by engine.isSpoofingDetected
             val currentPnL by riskManager.currentPnL
 
-            // Haupt-Layout: Deep Black OLED Background
+            // Haupt-Layout (OLED-Optimiert)
             Box(modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
             ) {
-                // 1. Die Heatmap & 3D Bubbles Layer
+                // 1. Heatmap & Orderflow Layer
                 HeatmapRenderer(engine = engine)
 
-                // 2. Risk Management Center (Oben)
+                // 2. Risk Management (Oben)
                 Column(
                     modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -48,16 +47,15 @@ class MainActivity : ComponentActivity() {
                     PnLPill(riskManager = riskManager)
                 }
 
-                // 3. Spoofing Warn-Indikator (Zentral/Rechts)
+                // 3. Spoofing Warnung (Rechter Rand)
                 Box(modifier = Modifier.align(Alignment.CenterEnd)) {
                     SpoofIndicator(isVisible = isSpoofing)
                 }
 
-                // 4. Haptik-Trigger-Logik (Side Effect)
+                // 4. Haptik-Logik: Feedback bei Marktereignissen
                 LaunchedEffect(isSpoofing) {
                     if (isSpoofing) {
                         hapticEngine.triggerSpoofTick()
-                        // Reset nach Kurzer Zeit
                         kotlinx.coroutines.delay(1000)
                         engine.isSpoofingDetected.value = false
                     }
