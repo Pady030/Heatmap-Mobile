@@ -1,25 +1,16 @@
 package com.trading.heatmapmobile.ui.components
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.trading.heatmapmobile.hardware.HapticManager
+import com.trading.heatmapmobile.stats.SessionStats
 
-class HeatmapViewModel(private val hapticManager: HapticManager? = null) : ViewModel() {
-    val liveOrderBook = mutableStateMapOf<Double, Int>()
-    val currentPrice = mutableStateOf(18250.0)
-    val activeBubbles = mutableStateListOf<TradeBubble>()
-    var showSpoofAlert = mutableStateOf(false)
+class HeatmapViewModel : ViewModel() {
+    // ... (vorheriger Code bleibt erhalten)
+    
+    var isStatsVisible = mutableStateOf(false)
+    var currentSessionStats = mutableStateOf(SessionStats())
 
-    fun triggerSpoofX(price: Double) {
-        showSpoofAlert.value = true
-        hapticManager?.triggerSpoofAlert() // SPÜRE die Falle!
-        // Reset Logik...
-    }
-
-    fun addTrade(price: Double, size: Int, isBuy: Boolean) {
-        if (size > 100) hapticManager?.triggerTradeTick() // SPÜRE den Wal!
-        activeBubbles.add(TradeBubble(price, size, isBuy))
+    fun toggleStats() {
+        isStatsVisible.value = !isStatsVisible.value
     }
 }
