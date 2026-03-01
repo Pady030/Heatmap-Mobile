@@ -12,26 +12,32 @@ class HeatmapViewModel : ViewModel() {
     val liveOrderBook = mutableStateMapOf<Double, Int>()
     val currentPrice = mutableStateOf(18250.0)
     val activeBubbles = mutableStateListOf<TradeBubble>()
+    
+    // Spoofing State
+    var showSpoofAlert = mutableStateOf(false)
+    var spoofPrice = mutableStateOf(0.0)
 
-    init {
-        // Die "Time-Travel" Engine: Bewegt Bubbles nach links
+    fun triggerSpoofX(price: Double) {
+        spoofPrice.value = price
+        showSpoofAlert.value = true
         viewModelScope.launch {
-            while (true) {
-                delay(16) // ~60 FPS Update-Rate für die Position
-                val iterator = activeBubbles.iterator()
-                while (iterator.hasNext()) {
-                    val bubble = iterator.next()
-                    bubble.xPosition -= 2f // Geschwindigkeit der Zeitachse
-                    if (bubble.xPosition < 0) {
-                        // Bubble ist aus dem Bildschirm gewandert
-                    }
-                }
-            }
+            delay(800) // Das X leuchtet für 800ms auf
+            showSpoofAlert.value = false
         }
+    }
+
+    fun updateOrderBook(price: Double, size: Int) {
+        if (size <= 0) liveOrderBook.remove(price) 
+        else liveOrderBook[price] = size
+    }
+
+    fun updatePrice(price: Double, size: Int) {
+        currentPrice.value = price
+        updateOrderBook(price, size)
     }
 
     fun addTrade(price: Double, size: Int, isBuy: Boolean) {
         activeBubbles.add(TradeBubble(price, size, isBuy))
-        if (activeBubbles.size > 100) activeBubbles.removeAt(0) // Speicher schonen
+        if (activeBubbles.size > 150) activeBubbles.removeAt(0)
     }
 }
