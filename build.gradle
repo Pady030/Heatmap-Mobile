@@ -1,18 +1,17 @@
-buildscript {.git,README.md,app,build.gradle,settings.gradle} 
-    repositories {.git,README.md,app,build.gradle,settings.gradle} 
+buildscript {
+    repositories {
         google()
         mavenCentral()
-    
-    dependencies {.git,README.md,app,build.gradle,settings.gradle} 
-        // Wir nutzen eine stabilere Version für den ersten Build
+    }
+    dependencies {
         classpath 'com.android.tools.build:gradle:8.1.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.20"
-    
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21"
+    }
+}
 
-
-allprojects {.git,README.md,app,build.gradle,settings.gradle} 
-    repositories {.git,README.md,app,build.gradle,settings.gradle} 
+allprojects {
+    repositories {
         google()
         mavenCentral()
-    
-
+    }
+}
